@@ -23,7 +23,9 @@ Use this checklist when moving Solutionary HQ to a Supabase project controlled b
 
 - Configure Site URL in Supabase Auth settings to the production domain.
 - Configure redirect URLs for local development, Vercel preview domains if needed, and production domains.
-- Configure Google OAuth directly in Supabase before removing Lovable OAuth from the app.
+- Configure Google OAuth directly in Supabase because the app now uses native Supabase OAuth instead of Lovable OAuth.
+- Google OAuth redirect/callback must be configured in Google Cloud and Supabase Auth provider settings for the owner Supabase project.
+- At minimum, allow local and production redirects used by the app, such as `http://localhost:8080`, the Vercel preview domain if used, and the production domain.
 - Verify password signup, login, logout, password reset, and Google OAuth in a staging deployment before production cutover.
 
 ## Storage

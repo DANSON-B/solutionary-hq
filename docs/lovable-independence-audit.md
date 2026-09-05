@@ -29,7 +29,6 @@ This document tracks the migration goal: Lovable may remain a development tool, 
 
 ### Lovable
 
-- `src/integrations/lovable/index.ts` uses `@lovable.dev/cloud-auth-js` and `https://oauth.lovable.app/initiate` for Google OAuth.
 - `supabase/functions/ai-estimator/index.ts` uses `LOVABLE_API_KEY` and Lovable AI Gateway.
 - `supabase/functions/generate-tenant-site/index.ts` uses `LOVABLE_API_KEY` and Lovable AI Gateway.
 - `supabase/functions/send-call-quote/index.ts` can use Lovable connector gateway for Resend and Twilio when `LOVABLE_API_KEY` is configured.
@@ -72,7 +71,6 @@ This document tracks the migration goal: Lovable may remain a development tool, 
 
 ## Known Migration Risks
 
-- Google sign-in currently goes through Lovable OAuth and should move to native Supabase OAuth.
 - AI estimator and tenant site generation currently depend on Lovable AI Gateway.
 - `send-call-quote` has fallback paths that may use Lovable connector gateway.
 - `make-call` hardcodes a Supabase Functions host and must be parameterized before changing Supabase projects.
@@ -107,3 +105,10 @@ This document tracks the migration goal: Lovable may remain a development tool, 
 - Replaced hardcoded Supabase Function callback host in `supabase/functions/make-call/index.ts` with a value derived from `SUPABASE_URL`.
 - Replaced hardcoded Supabase Function callback URL in `supabase/functions/voicemail/index.ts` with a value derived from `SUPABASE_URL`.
 - Remaining planned Supabase ownership step: update `supabase/config.toml` to the owner project id when the new owner-controlled Supabase project is ready.
+
+## Phase 4 Auth Independence
+
+- Replaced Lovable-brokered Google OAuth on the login page with native Supabase Google OAuth.
+- Removed `src/integrations/lovable/index.ts`.
+- Removed `@lovable.dev/cloud-auth-js` from npm dependencies.
+- Required owner-account setup: configure Google OAuth directly in Supabase Auth provider settings and add production/local redirect URLs.
