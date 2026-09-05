@@ -1,0 +1,1 @@
+ALTER TABLE public.tenant_sites ADD COLUMN IF NOT EXISTS nav_items jsonb;

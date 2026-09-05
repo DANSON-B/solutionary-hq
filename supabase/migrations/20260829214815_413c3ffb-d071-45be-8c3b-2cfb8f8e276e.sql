@@ -1,0 +1,1 @@
+ALTER TABLE public.cleaning_wizard_config ADD COLUMN IF NOT EXISTS custom_services jsonb NOT NULL DEFAULT '[]'::jsonb;
