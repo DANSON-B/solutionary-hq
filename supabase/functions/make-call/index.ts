@@ -8,7 +8,7 @@ import { getBusinessClient } from "../_shared/twilio/business.ts";
 import { canMakeCall, incrementVoiceMinutes } from "../_shared/twilio/usage.ts";
 
 // Only allow Twilio webhook URLs pointing at our own Supabase functions.
-const ALLOWED_WEBHOOK_HOST = /^https:\/\/utdvvbtafdlcdwxutrpz\.supabase\.co\/functions\/v1\//i;
+const FUNCTIONS_BASE_URL = `${new URL(Deno.env.get("SUPABASE_URL")!).origin}/functions/v1/`;
 
 interface CallRequest {
   businessId: string;
@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
 
   const { businessId, toPhone, webhookUrl } = payload;
 
-  if (!ALLOWED_WEBHOOK_HOST.test(webhookUrl)) {
+  if (!webhookUrl.startsWith(FUNCTIONS_BASE_URL)) {
     return jsonResponse(req, { error: "webhookUrl not allowed" }, 400);
   }
 

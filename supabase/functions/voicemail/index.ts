@@ -11,7 +11,8 @@ const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPAB
   },
 });
 
-const RECORDING_COMPLETE_URL = "https://utdvvbtafdlcdwxutrpz.supabase.co/functions/v1/recording-complete";
+const FUNCTIONS_BASE_URL = `${new URL(Deno.env.get("SUPABASE_URL")!).origin}/functions/v1`;
+const RECORDING_COMPLETE_URL = `${FUNCTIONS_BASE_URL}/recording-complete`;
 
 function twiml(body: string) {
   return new Response(body, {

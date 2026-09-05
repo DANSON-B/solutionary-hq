@@ -100,3 +100,10 @@ This document tracks the migration goal: Lovable may remain a development tool, 
 - Full dependency audit reports dev-only vulnerabilities. Do not run automatic forced fixes without reviewing breaking changes.
 - Removed `bun.lock` because Bun is not installed, npm is the documented install/deploy path, and the Bun lockfile contained Lovable sandbox package-cache URLs.
 - Regenerated `package-lock.json` from the public npm registry so npm installs are no longer tied to Lovable's package cache.
+
+## Phase 3 Supabase Portability Prep
+
+- Added `docs/supabase-ownership-checklist.md` for the owner-controlled Supabase setup and cutover process.
+- Replaced hardcoded Supabase Function callback host in `supabase/functions/make-call/index.ts` with a value derived from `SUPABASE_URL`.
+- Replaced hardcoded Supabase Function callback URL in `supabase/functions/voicemail/index.ts` with a value derived from `SUPABASE_URL`.
+- Remaining planned Supabase ownership step: update `supabase/config.toml` to the owner project id when the new owner-controlled Supabase project is ready.
