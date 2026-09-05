@@ -21,6 +21,7 @@ Use this checklist when moving Solutionary HQ to a Supabase project controlled b
 
 ## Auth
 
+- Follow `docs/google-supabase-oauth-setup.md` for Google OAuth setup.
 - Configure Site URL in Supabase Auth settings to the production domain.
 - Configure redirect URLs for local development, Vercel preview domains if needed, and production domains.
 - Configure Google OAuth directly in Supabase because the app now uses native Supabase OAuth instead of Lovable OAuth.

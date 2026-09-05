@@ -53,6 +53,10 @@ This repo includes `vercel.json` SPA rewrites so React Router deep links resolve
 5. Add environment variables from `.env.example` in Vercel Project Settings.
 6. Deploy.
 
+## Google Login
+
+Google sign-in uses native Supabase OAuth. Configure the Google provider in the owner Supabase project before relying on Google login. See `docs/google-supabase-oauth-setup.md`.
+
 ## Production Security Config
 
 Set these Supabase Edge Function environment variables before going live:
