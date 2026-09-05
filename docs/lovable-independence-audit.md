@@ -89,3 +89,14 @@ This document tracks the migration goal: Lovable may remain a development tool, 
 6. Vercel ownership: connect GitHub repo to owner Vercel project and configure frontend env vars.
 7. Storage ownership decision: keep Supabase Storage under owner Supabase or migrate uploads to owner cloud storage such as Cloudflare R2 or AWS S3.
 8. Final validation: test auth, PWA, offline queue, booking, billing, email, SMS/voice, storage uploads, and Edge Functions before marking migration complete.
+
+## Phase 2 Baseline Verification
+
+- Dependencies installed with `npm install --legacy-peer-deps`.
+- Tests pass: `npm run test` completed with 2 test files and 6 tests passing.
+- Production build passes: `npm run build` completed successfully and generated the PWA service worker.
+- Build warning: Browserslist/caniuse-lite data is stale. This is non-blocking.
+- Production dependency audit: `npm audit --omit=dev` reports 0 vulnerabilities.
+- Full dependency audit reports dev-only vulnerabilities. Do not run automatic forced fixes without reviewing breaking changes.
+- Removed `bun.lock` because Bun is not installed, npm is the documented install/deploy path, and the Bun lockfile contained Lovable sandbox package-cache URLs.
+- Regenerated `package-lock.json` from the public npm registry so npm installs are no longer tied to Lovable's package cache.
