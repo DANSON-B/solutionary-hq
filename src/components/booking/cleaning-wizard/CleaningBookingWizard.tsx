@@ -153,41 +153,6 @@ export default function CleaningBookingWizard({ business, isEmbed }: Props) {
     };
   }, [business.id, loadCustomServices]);
 
-  // Owner detection: only the signed-in business owner can manage services inline
-  const [isOwner, setIsOwner] = useState(false);
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase
-        .from("businesses")
-        .select("id")
-        .eq("id", business.id)
-        .eq("owner_id", user.id)
-        .maybeSingle();
-      if (!cancelled) setIsOwner(!!data);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [business.id]);
-
-  const addCustomService = async (label: string, price: number) => {
-    const { error } = await supabase
-      .from("cleaning_custom_services")
-      .insert({ business_id: business.id, label, price, enabled: true });
-    if (error) {
-      toast({ title: "Could not save service", description: error.message, variant: "destructive" });
-      return false;
-    }
-    await loadCustomServices();
-    toast({ title: "Service added", description: `${label} is now available.` });
-    return true;
-  };
-
-
-
   const isPostConstruction = serviceType === "post_construction";
   const steps: readonly StepName[] = isPostConstruction ? PC_STEPS : STEPS;
   const currentStep = steps[Math.min(step, steps.length - 1)] as StepName;
@@ -613,8 +578,6 @@ export default function CleaningBookingWizard({ business, isEmbed }: Props) {
               <StepService
                 config={config}
                 selected={serviceType}
-                canManage={isOwner}
-                onAddCustomService={addCustomService}
                 onSelect={(s) => {
                   setServiceType(s);
                   setAddOnSelections({});
@@ -777,31 +740,11 @@ function StepService({
   config,
   selected,
   onSelect,
-  canManage,
-  onAddCustomService,
 }: {
   config: WizardConfig;
   selected: ServiceType | "";
   onSelect: (s: ServiceType) => void;
-  canManage?: boolean;
-  onAddCustomService?: (label: string, price: number) => Promise<boolean>;
 }) {
-  const [newLabel, setNewLabel] = useState("");
-  const [newPrice, setNewPrice] = useState("");
-  const [adding, setAdding] = useState(false);
-
-  const submitCustom = async () => {
-    const label = newLabel.trim().slice(0, 80);
-    if (!label || !onAddCustomService) return;
-    setAdding(true);
-    const ok = await onAddCustomService(label, Math.max(0, parseFloat(newPrice) || 0));
-    setAdding(false);
-    if (ok) {
-      setNewLabel("");
-      setNewPrice("");
-    }
-  };
-
   const types: ServiceType[] = (
     ["residential", "deep", "move", "commercial", "post_construction"] as ServiceType[]
   ).filter((t) => config.services[t]);
@@ -809,58 +752,6 @@ function StepService({
     <div>
       <h2 className="text-xl font-bold mb-1">Choose Cleaning Type</h2>
       <p className="text-sm text-muted-foreground mb-5">Pick the service that fits your space.</p>
-
-      {canManage && (
-        <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4">
-          <div className="mb-3">
-            <h3 className="text-sm font-semibold">Add Custom Service</h3>
-            <p className="text-xs text-muted-foreground">
-              Only you (the business owner) can see this. Added services appear to customers instantly.
-            </p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_8rem_auto] sm:items-end">
-            <div>
-              <Label htmlFor="wiz-custom-name" className="text-xs">Service name</Label>
-              <Input
-                id="wiz-custom-name"
-                value={newLabel}
-                maxLength={80}
-                placeholder="e.g. Airbnb Turnover Clean"
-                onChange={(e) => setNewLabel(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    void submitCustom();
-                  }
-                }}
-                className="mt-1 h-12 text-base"
-              />
-            </div>
-            <div>
-              <Label htmlFor="wiz-custom-price" className="text-xs">Price ($)</Label>
-              <Input
-                id="wiz-custom-price"
-                type="number"
-                min="0"
-                step="0.01"
-                inputMode="decimal"
-                value={newPrice}
-                placeholder="0.00"
-                onChange={(e) => setNewPrice(e.target.value)}
-                className="mt-1 h-12 text-base"
-              />
-            </div>
-            <Button
-              type="button"
-              onClick={() => void submitCustom()}
-              disabled={adding || !newLabel.trim()}
-              className="h-12 w-full sm:w-auto"
-            >
-              {adding ? "Saving..." : "Add to list"}
-            </Button>
-          </div>
-        </div>
-      )}
 
       <div className="space-y-3">
 
