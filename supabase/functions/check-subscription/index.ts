@@ -34,9 +34,6 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
-
     const authHeader = req.headers.get("Authorization");
     const token = authHeader?.replace("Bearer ", "").trim() ?? "";
 
@@ -82,6 +79,12 @@ serve(async (req) => {
         subscription_end: null,
         trial_end: null,
       });
+    }
+
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      logStep("STRIPE_SECRET_KEY is not set - treating as unsubscribed");
+      return jsonResponse(req, { subscribed: false, status: null });
     }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
