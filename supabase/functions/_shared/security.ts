@@ -3,6 +3,7 @@ const FALLBACK_SITE_ORIGIN = "https://solutionaryhq.com";
 const DEFAULT_ALLOWED_ORIGINS = [
   FALLBACK_SITE_ORIGIN,
   "https://www.solutionaryhq.com",
+  "https://solutionary-hq.vercel.app",
   "http://localhost:3000",
   "http://localhost:5173",
   "http://localhost:8080",
