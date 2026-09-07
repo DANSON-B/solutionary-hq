@@ -3,7 +3,20 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 import { buildCorsHeaders, jsonResponse, rejectMissingOrDisallowedOrigin } from "../_shared/security.ts";
 
-const SUPER_ADMIN_EMAIL = "support@solutionaryhq.com";
+const envEmailList = (name: string) =>
+  (Deno.env.get(name) ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
+const isSuperAdminEmail = (email: string) => {
+  const allowedEmails = new Set([
+    "support@solutionaryhq.com",
+    ...envEmailList("SUPER_ADMIN_EMAILS"),
+    ...envEmailList("LIFETIME_OWNER_EMAILS"),
+  ]);
+  return allowedEmails.has(email.toLowerCase());
+};
 
 const log = (step: string, details?: unknown) => {
   const d = details ? ` - ${JSON.stringify(details)}` : "";
@@ -33,7 +46,7 @@ serve(async (req) => {
       return jsonResponse(req, { error: "Not authenticated" }, 401);
     }
 
-    if (userData.user.email.toLowerCase() !== SUPER_ADMIN_EMAIL.toLowerCase()) {
+    if (!isSuperAdminEmail(userData.user.email)) {
       log("Forbidden", { email: userData.user.email });
       return jsonResponse(req, { error: "Forbidden" }, 403);
     }

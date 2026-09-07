@@ -8,6 +8,14 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
+const BUSINESS_PRODUCT_ID = "prod_UPlnJsUZfzFEQx";
+
+const envEmailList = (name: string) =>
+  (Deno.env.get(name) ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
 serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req);
   if (req.method === "OPTIONS") {
@@ -46,6 +54,18 @@ serve(async (req) => {
     }
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    const lifetimeOwnerEmails = envEmailList("LIFETIME_OWNER_EMAILS");
+    if (lifetimeOwnerEmails.includes(user.email.toLowerCase())) {
+      logStep("Lifetime owner access found");
+      return jsonResponse(req, {
+        subscribed: true,
+        product_id: BUSINESS_PRODUCT_ID,
+        status: "lifetime_owner",
+        subscription_end: null,
+        trial_end: null,
+      });
+    }
+
     // Check for subscription override (beta testers, internal QA, etc.)
     const { data: override } = await supabaseClient
       .from("subscription_overrides")
@@ -57,7 +77,7 @@ serve(async (req) => {
       logStep("Subscription override found", { reason: override.reason });
       return jsonResponse(req, {
         subscribed: true,
-        product_id: null,
+        product_id: BUSINESS_PRODUCT_ID,
         status: "override",
         subscription_end: null,
         trial_end: null,

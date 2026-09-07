@@ -64,6 +64,8 @@ Set these Supabase Edge Function environment variables before going live:
 - `SITE_URL` (for example `https://solutionaryhq.com`)
 - `ALLOWED_ORIGINS` (comma-separated allowed web origins, e.g. `https://solutionaryhq.com,https://www.solutionaryhq.com`)
 - `ALLOWED_STRIPE_PRICE_IDS` (comma-separated Stripe price IDs that checkout is allowed to create)
+- `LIFETIME_OWNER_EMAILS` (comma-separated owner emails that receive permanent Business/unlimited-users access)
+- `SUPER_ADMIN_EMAILS` (comma-separated emails that can access the super-admin tenant dashboard)
 
 ## Notes
 
